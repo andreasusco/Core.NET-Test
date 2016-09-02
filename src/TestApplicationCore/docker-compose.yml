@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  testapplicationcore:
+    image: username/testapplicationcore
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
