@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporting e Invio Email</title>
+</head>
+<body>
+    <h1>Reporting e Invio Email</h1>
+    <a href="{% url 'dashboard' %}">Torna alla Dashboard</a>
+
+    <h2>Filtra Contatti</h2>
+    <form method="get">
+        <label for="ruolo">Filtra per Ruolo:</label>
+        <select name="ruolo" id="ruolo">
+            <option value="">Tutti i ruoli</option>
+            {% for ruolo in ruoli %}
+                <option value="{{ ruolo.id }}" {% if request.GET.ruolo == ruolo.id|stringformat:"s" %}selected{% endif %}>
+                    {{ ruolo.nome_ruolo }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filtra</button>
+    </form>
+
+    <hr>
+
+    <h2>Risultati</h2>
+    <form method="post">
+        {% csrf_token %}
+        <h3>Seleziona Template Email</h3>
+        <select name="template_id" required>
+            {% for template in templates %}
+                <option value="{{ template.id }}">{{ template.nome_template }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Invia Email ai Contatti Filtrati</button>
+
+        <h3>Elenco Contatti</h3>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Seleziona</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Email</th>
+                    <th>Ruolo</th>
+                    <th>Associazione</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contatto in contatti %}
+                    <tr>
+                        <td><input type="checkbox" name="contatto_ids" value="{{ contatto.id }}" checked></td>
+                        <td>{{ contatto.nome }}</td>
+                        <td>{{ contatto.cognome }}</td>
+                        <td>{{ contatto.email }}</td>
+                        <td>{{ contatto.ruolo.nome_ruolo }}</td>
+                        <td>{{ contatto.associazione.denominazione }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">Nessun contatto trovato.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>

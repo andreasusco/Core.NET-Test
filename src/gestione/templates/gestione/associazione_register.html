@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registra la tua Associazione</title>
+</head>
+<body>
+    <h1>Completa la Registrazione</h1>
+    <p>Per completare la registrazione della tua associazione, inserisci il codice univoco che ti è stato fornito.</p>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="codice_univoco">Codice Univoco:</label>
+        <input type="text" name="codice_univoco" id="codice_univoco" required>
+        <button type="submit">Registra</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+
+    <h2>Elenco Associazioni</h2>
+    <ul>
+        {% for associazione in associazioni %}
+            <li>{{ associazione.denominazione }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'admin:index' %}">Pannello di Amministrazione</a>
+    <br>
+    <a href="{% url 'account_logout' %}">Logout</a>
+</body>
+</html>
