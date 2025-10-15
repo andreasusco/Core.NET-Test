@@ -43,19 +43,29 @@
                     <th>Nome</th>
                     <th>Cognome</th>
                     <th>Email</th>
-                    <th>Ruolo</th>
-                    <th>Associazione</th>
+                    <th>Ruoli</th>
+                    <th>Associazioni</th>
                 </tr>
             </thead>
             <tbody>
-                {% for contatto in contatti %}
+                {% for contatto, associazioni in contatti_con_associazioni.items %}
                     <tr>
                         <td><input type="checkbox" name="contatto_ids" value="{{ contatto.id }}" checked></td>
                         <td>{{ contatto.nome }}</td>
                         <td>{{ contatto.cognome }}</td>
                         <td>{{ contatto.email }}</td>
-                        <td>{{ contatto.ruolo.nome_ruolo }}</td>
-                        <td>{{ contatto.associazione.denominazione }}</td>
+                        <td>
+                            <ul>
+                            {% for ruolo in contatto.ruoli.all %}
+                                <li>{{ ruolo.nome_ruolo }} ({{ ruolo.associazione.denominazione }})</li>
+                            {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            {% for associazione in associazioni %}
+                                {{ associazione.denominazione }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>
