@@ -70,39 +70,40 @@ class MembroConsiglio(models.Model):
         verbose_name_plural = "Membri del Consiglio"
 
 
-class RuoloReferente(models.Model):
+class Ruolo(models.Model):
     """
-    Ruoli predefiniti per i contatti (es. Referente Tecnico).
+    Ruoli specifici per ogni associazione.
     """
+    associazione = models.ForeignKey(
+        Associazione, on_delete=models.CASCADE, related_name='ruoli'
+    )
     nome_ruolo = models.CharField(
-        max_length=100, unique=True,
-        help_text="Il nome del ruolo predefinito (es. Referente Tecnico)."
+        max_length=100,
+        help_text="Il nome del ruolo specifico per l'associazione."
+    )
+    contatti = models.ManyToManyField(
+        'Contatto', related_name='ruoli', blank=True
     )
 
     def __str__(self):
-        return self.nome_ruolo
+        return f"{self.nome_ruolo} ({self.associazione.denominazione})"
 
     class Meta:
-        verbose_name_plural = "Ruoli Referente"
+        verbose_name_plural = "Ruoli"
+        unique_together = ('associazione', 'nome_ruolo')
 
 
 class Contatto(models.Model):
     """
-    Contatti (referenti) di un'associazione.
+    Anagrafica di una persona, che può essere un contatto per più associazioni.
     """
-    associazione = models.ForeignKey(
-        Associazione, on_delete=models.CASCADE, related_name='contatti'
-    )
-    ruolo = models.ForeignKey(
-        RuoloReferente, on_delete=models.PROTECT, related_name='contatti'
-    )
     nome = models.CharField(max_length=100)
     cognome = models.CharField(max_length=100)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     telefono = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"{self.nome} {self.cognome} ({self.ruolo.nome_ruolo}) - {self.associazione.denominazione}"
+        return f"{self.nome} {self.cognome} ({self.email})"
 
     class Meta:
         verbose_name_plural = "Contatti"

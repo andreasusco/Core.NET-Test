@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from allauth.socialaccount.helpers import complete_social_login
 from allauth.socialaccount.models import SocialLogin
-from .models import Associazione, User, Contatto, RuoloReferente, EmailTemplate
+from .models import Associazione, User, Contatto, Ruolo, EmailTemplate
 
 class AssociazioneRegistrationView(View):
     def get(self, request, *args, **kwargs):
@@ -57,19 +57,29 @@ class DashboardView(LoginRequiredMixin, View):
 class ReportingView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = request.user
-        contatti = Contatto.objects.all()
-        ruoli = RuoloReferente.objects.all()
 
-        if user.role == User.Role.MASTER:
-            contatti = contatti.filter(associazione=user.associazione)
+        # In base al ruolo dell'utente, determiniamo quali ruoli e contatti mostrare
+        if user.role == User.Role.ADMIN:
+            ruoli = Ruolo.objects.all()
+            contatti_qs = Contatto.objects.all()
+        else: # MASTER
+            ruoli = Ruolo.objects.filter(associazione=user.associazione)
+            # Mostra solo i contatti che hanno almeno un ruolo in questa associazione
+            contatti_qs = Contatto.objects.filter(ruoli__associazione=user.associazione).distinct()
 
-        # Filtri
+        # Filtro per ruolo
         ruolo_id = request.GET.get('ruolo')
         if ruolo_id:
-            contatti = contatti.filter(ruolo_id=ruolo_id)
+            contatti_qs = contatti_qs.filter(ruoli__id=ruolo_id)
+
+        # Aggiungiamo un dizionario per mappare i contatti alle loro associazioni uniche
+        contatti_con_associazioni = {}
+        for contatto in contatti_qs:
+            associazioni = Associazione.objects.filter(ruoli__contatti=contatto).distinct()
+            contatti_con_associazioni[contatto] = associazioni
 
         context = {
-            'contatti': contatti,
+            'contatti_con_associazioni': contatti_con_associazioni,
             'ruoli': ruoli,
             'templates': EmailTemplate.objects.all()
         }
