@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Associazione</title>
+</head>
+<body>
+    <h1>Dashboard: {{ associazione.denominazione }}</h1>
+
+    <h2>Dati Anagrafici</h2>
+    <p><strong>Denominazione:</strong> {{ associazione.denominazione }}</p>
+    <p><strong>Indirizzo Principale:</strong> {{ associazione.indirizzo_principale }}</p>
+    {% if associazione.logo %}
+        <p><strong>Logo:</strong> <img src="{{ associazione.logo.url }}" alt="Logo" width="100"></p>
+    {% endif %}
+
+    <a href="{% url 'admin:index' %}">Modifica Dati (Admin)</a>
+    <br>
+    <a href="{% url 'account_logout' %}">Logout</a>
+</body>
+</html>
